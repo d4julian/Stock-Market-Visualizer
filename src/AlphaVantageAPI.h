@@ -35,7 +35,8 @@ public:
 
     std::string fetchData() {
         if (apiKey.empty()) {
-            cout << "Please generate an API key on the Alpha Vantage website!" << endl << "https://www.alphavantage.co/support/#api-key" << endl;
+            std::cout << "Please generate an API key on the Alpha Vantage website!" << 
+            std::endl << "https://www.alphavantage.co/support/#api-key" << std::endl;
             exit(0);
         }
         CURL* curl;
