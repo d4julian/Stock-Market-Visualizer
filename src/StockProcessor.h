@@ -8,11 +8,11 @@
 
 using namespace std;
 
-class StockMarketVisualizer {
+class StockProcessor {
 private:
     AlphaVantageAPI::function function;
 public:
-    StockMarketVisualizer(AlphaVantageAPI::function function) : function(function) {}
+    StockProcessor(AlphaVantageAPI::function function) : function(function) {}
 
     std::priority_queue<Stock> maxHeap;
     std::unordered_map<std::string, Stock> stockMap;
