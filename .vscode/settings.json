@@ -59,7 +59,22 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "utility": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "__tree": "cpp",
+        "any": "cpp",
+        "clocale": "cpp",
+        "compare": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "valarray": "cpp",
+        "random": "cpp",
+        "set": "cpp"
     },
     "code-runner.executorMap": {
         "javascript": "node",

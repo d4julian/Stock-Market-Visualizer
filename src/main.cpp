@@ -1,58 +1,60 @@
 #include <iostream>
 #include "AlphaVantageAPI.h"
+#include "Interface.h"
+#include "Stock.h"
+#include "StockProcessor.h"
 #include "../json.hpp"
 
 using json = nlohmann::json;
 using namespace std;
 
 int main() {
+    string input, data;
     AlphaVantageAPI api("../apikey.txt");
 
-    try {
-        string data = api.fetchData(AlphaVantageAPI::function::TOP_GAINERS_LOSERS);
-        auto jsonData = json::parse(data);
+    cout << "Would you like to use a sample dataset or data from last market close? (sample/real)" << endl;
+    cin >> input;
+    if (input == "real") data = api.fetchData();
+    else {
+        if (input != "sample") cout << "Invalid selection, using sample data..." << endl;
+        data = api.readFile("../stock_data.json");
+    }
 
-        cout << "Top Gainers, Losers, and Most Actively Traded Stocks:" << endl;
-        cout << "Metadata: " << jsonData["metadata"] << endl;
-        cout << "Last Updated: " << jsonData["last_updated"] << endl;
+    auto jsonData = json::parse(data);
 
-        if (jsonData.contains("top_gainers")) {
-            cout << "\nTop Gainers:\n";
-            for (const auto& item : jsonData["top_gainers"]) {
-                cout << "Ticker: " << item["ticker"]
-                     << ", Price: " << item["price"]
-                     << ", Change Amount: " << item["change_amount"]
-                     << ", Change Percentage: " << item["change_percentage"]
-                     << ", Volume: " << item["volume"] << endl;
+    int choice;
+    while ((choice = Interface::displayMenu()) != 4) {
+        try {
+            AlphaVantageAPI::function function;
+            switch (choice) {
+                case 1: function = AlphaVantageAPI::function::TOP_GAINERS; break;
+                case 2: function = AlphaVantageAPI::function::TOP_LOSERS; break;
+                case 3: function = AlphaVantageAPI::function::MOST_ACTIVELY_TRADED; break;
+                default: cout << "Invalid choice. Please try again." << endl; continue;
             }
-        }
-
-        if (jsonData.contains("top_losers")) {
-            cout << "\nTop Losers:\n";
-            for (const auto& item : jsonData["top_losers"]) {
-                cout << "Ticker: " << item["ticker"]
-                     << ", Price: " << item["price"]
-                     << ", Change Amount: " << item["change_amount"]
-                     << ", Change Percentage: " << item["change_percentage"]
-                     << ", Volume: " << item["volume"] << endl;
+            StockProcessor processor(function);
+            for (const auto& item : jsonData[AlphaVantageAPI::getFunctionName(function)]) {
+                string changePercentage = item["change_percentage"].get<string>();
+                changePercentage.pop_back();
+                processor.addStock(
+                    item["ticker"].get<string>(), 
+                    stod(item["price"].get<string>()), 
+                    stod(item["change_amount"].get<string>()), 
+                    stod(changePercentage), 
+                    stod(item["volume"].get<string>()));
             }
-        }
+            
+            vector<Stock> stocks = processor.getHeap();
+            Interface::displayStocks(function, stocks);
+            int index = Interface::displayTickerMenu(stocks);
+            Interface::displayDetailedStock(stocks[index]);
+            processor.clearHeap();
 
-        if (jsonData.contains("most_actively_traded")) {
-            cout << "\nMost Actively Traded:\n";
-            for (const auto& item : jsonData["most_actively_traded"]) {
-                cout << "Ticker: " << item["ticker"]
-                     << ", Price: " << item["price"]
-                     << ", Change Amount: " << item["change_amount"]
-                     << ", Change Percentage: " << item["change_percentage"]
-                     << ", Volume: " << item["volume"] << endl;
-            }
+        } catch (const json::parse_error& e) {
+            cerr << "JSON parse error: " << e.what() << endl;
+        } catch (const exception& e) {
+            cerr << "An error occurred: " << e.what() << endl;
         }
-
-    } catch (const json::parse_error& e) {
-        cerr << "JSON parse error: " << e.what() << endl;
-    } catch (const exception& e) {
-        cerr << "An error occurred: " << e.what() << endl;
     }
 
     return 0;
