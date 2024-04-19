@@ -34,7 +34,7 @@ public:
         }
         
         cout << "****************************" << endl;
-        cout << title << endl;
+        cout << title << " (Top 20)" << endl;
         cout << "****************************" << endl;
         for (unsigned int i = 0; i < 20; i++) {
             cout << (i + 1) << ". " << stocks[i].ticker << " | " << 
