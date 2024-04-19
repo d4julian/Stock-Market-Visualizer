@@ -5,41 +5,43 @@
 #include <ctime>
 #include <string>
 #include <cmath>
+#include <algorithm>
+#include <set>
 #include "Stock.h"
 
 using namespace std;
 
-std::string getTimestamp() {
-    auto now = std::chrono::system_clock::now();
-    auto time = std::chrono::system_clock::to_time_t(now);
+string getTimestamp() {
+    auto now = chrono::system_clock::now();
+    auto time = chrono::system_clock::to_time_t(now);
 
-    std::stringstream stream;
-    stream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S %Z");
+    stringstream stream;
+    stream << put_time(localtime(&time), "%Y-%m-%d %H:%M:%S %Z");
     return stream.str();
 }
 
-vector<string> generateTickerNames(int size) {
-    vector<string> tickers;
+set<string> generateTickerNames(int size) {
+    set<string> tickers;
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> dist(65, 90);
     uniform_int_distribution<> lengthDist(3, 5);
 
-    for (int i = 0; i < size; ++i) {
+    while (tickers.size() < size) {
         string ticker;
         for (int j = 0; j < lengthDist(gen); ++j) ticker += char(dist(gen));
-        tickers.push_back(ticker);
+        tickers.insert(ticker);
     }
     return tickers;
 }
 
-std::vector<Stock> generateStocks(const std::vector<std::string>& tickers) {
-    std::vector<Stock> stocks;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> priceDist(0.10, 900.0);
-    std::uniform_real_distribution<> changePercentageDist(0.01, 1000.0);
-    std::uniform_int_distribution<> volumeDist(1000, 1000000);
+vector<Stock> generateStocks(const set<string>& tickers) {
+    vector<Stock> stocks;
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> priceDist(0.10, 900.0);
+    uniform_real_distribution<> changePercentageDist(0.01, 1000.0);
+    uniform_int_distribution<> volumeDist(1000, 1000000);
 
     for (const auto& ticker : tickers) {
         double price = priceDist(gen);
@@ -100,7 +102,7 @@ void writeJSON(const vector<Stock>& stocks, const string& filename) {
 }
 
 int main() {
-    vector<string> tickers = generateTickerNames(100000);
+    set<string> tickers = generateTickerNames(100000);
     vector<Stock> stocks = generateStocks(tickers);
     writeJSON(stocks, "../stock_data.json");
     cout << "Successfully generated " << stocks.size() << " entries." << endl;
