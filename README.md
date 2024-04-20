@@ -38,16 +38,44 @@ If it is not installed, here is a good resource that you can use to install it:
 https://help.ubidots.com/en/articles/2165289-learn-how-to-install-run-curl-on-windows-macosx-linux (Open at your own discretion)
 
 4. **Compile the source code using g++**
+
+MacOS:
    ```bash
    g++ -std=c++17 main.cpp -o main -lcurl
+   ```
+Windows:
+   ```bash
+   g++ -std=c++17 -I<path_to_curl_include_dir> main.cpp -o main -L<path_to_curl_lib_dir> -lcurl
+   ```
 5. **Run the application**
+
+MacOS:
    ```bash
    ./main
+   ```
+Windows:
+   ```bash
+   main
+   ```
 ## Generating sample data
 This program allows for 100,000 stocks to be generated to use as sample data. To generate the sample data stored in stock_data.json use the following steps:
 1. **Compile the source code using g++**
+
+MacOS:
    ```bash
-   g++ -std=c++17 generate.cpp -o generate
+   g++ -std=c++17 generate.cpp -o generate -lcurl
+   ```
+Windows:
+   ```bash
+   g++ -std=c++17 -I<path_to_curl_include_dir> generate.cpp -o generate -L<path_to_curl_lib_dir> -lcurl
+   ```
 5. **Run the application**
+
+MacOS:
    ```bash
    ./generate
+   ```
+
+Windows:
+   ```bash
+   generate
