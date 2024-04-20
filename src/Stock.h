@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <sstream>
+#include <iomanip>
 #include "AlphaVantageAPI.h"
 
 class Stock {
